@@ -16,7 +16,6 @@ export interface HomeCarouselCardProps {
 }
 
 const HomeCarouselCard: React.FC<HomeCarouselCardProps> = ({ caption, heading, description, handleClick, buttonText, eventImgUrl }) => {
-    console.log(eventImgUrl)
     return (
         <div className='px-6 md:px-16 pt-4 md:pt-6 pb-10 w-full md:max-h-[624px] md:h-full shadow-sm transition-all duration-150 hover:shadow-lg rounded-3xl bg-gradient-to-r from-orange-500 to-yellow-500 grid grid-cols-1 md:grid-cols-2'>
             {/* gird item 1 */}
@@ -31,11 +30,14 @@ const HomeCarouselCard: React.FC<HomeCarouselCardProps> = ({ caption, heading, d
             </div>
             {/* grid item 2 */}
             <div className='hidden md:flex
-        justify-center items-center'>
+        justify-center items-center relative'>
             {/* use import image url */}
-            <Image src={typeof eventImgUrl === 'string' ? STORAGE_URL + eventImgUrl : eventImgUrl } alt="banner" className="max-w-[412px] w-full aspect-square" fill sizes="(max-width: 412px) 100vw, 50vw"/>
+            <Image src={typeof eventImgUrl === 'string' ? STORAGE_URL + eventImgUrl : eventImgUrl } alt="banner" className="max-w-[412px] w-full aspect-square" fill />
           
         </div>
+
+
+
 
             {/* // */}
 

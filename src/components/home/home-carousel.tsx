@@ -64,11 +64,12 @@ const HomeCarousel = () => {
         }),
       ]}>
         <CarouselContent>
-          {cards?.map((item:any, index:number) => (
+          {cards?.map((item:any, index:number) =>{
+            return (
             <CarouselItem key={index}>
                 <HomeCarouselCard caption={item.caption} heading={item.heading} description={item.description} buttonText={item.buttonText} handleClick={() => router.push('/category')} eventImgUrl={item.banner_image as string}/>
             </CarouselItem>
-          ))}
+          )})}
         </CarouselContent>
         <div className="absolute left-[50%] -translate-x-[50%] bottom-3 flex gap-3 items-center">
             {cards.map((_:any, index:number) => (

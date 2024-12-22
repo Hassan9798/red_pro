@@ -1,4 +1,6 @@
 "use client";
+import { STORAGE_URL } from "@/config";
+import { srisakdi } from "@/fonts";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +10,8 @@ import { IoChevronDown } from "react-icons/io5";
 export interface MegaMenuProps {
   imgUrl?: string;
   text: string;
-  items: string[];
+  // items: string[];
+  items: Array<any>;
   onItemClick: (item: string) => void;
 }
 
@@ -26,7 +29,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
       <div className="flex flex-col justify-center items-center text-center gap-2 text-[10px] sm:text-sm text-neutral-light cursor-pointer group">
         {imgUrl ? (
           <Image
-            src={imgUrl}
+            src={STORAGE_URL + imgUrl}
             alt={text}
             width={46}
             height={46}
@@ -50,7 +53,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
               "overflow-auto py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
             )}
           >
-            {items?.map((item, index) => (
+            {items.length>0 ? items?.map((item, index) => (
               // TODO updates items array with name and href
               <Link
                 href={"/category"}
@@ -58,9 +61,12 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
                 onClick={() => onItemClick(item)}
                 className="transition-all duration-150 p-2 text-lg text-neutral-light hover:bg-[#DDDDDD] cursor-pointer"
               >
-                {item}
+                {item.name}
               </Link>
-            ))}
+            ))
+          :
+          <h3 className="text-neutral-light text-right">No Items</h3>
+          }
           </div>
         </div>
       </div>
