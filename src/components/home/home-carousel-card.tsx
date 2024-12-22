@@ -17,14 +17,14 @@ export interface HomeCarouselCardProps {
 
 const HomeCarouselCard: React.FC<HomeCarouselCardProps> = ({ caption, heading, description, handleClick, buttonText, eventImgUrl }) => {
     return (
-        <div className='px-6 md:px-16 pt-4 md:pt-6 pb-10 w-full md:max-h-[624px] md:h-full shadow-sm transition-all duration-150 hover:shadow-lg rounded-3xl bg-gradient-to-r from-orange-500 to-yellow-500 grid grid-cols-1 md:grid-cols-2'>
+        <div className='px-6 h-[288px] md:px-16 pt-4 md:pt-6 pb-10 w-full md:max-h-[624px] md:h-full shadow-sm transition-all duration-150 hover:shadow-lg rounded-3xl bg-gradient-to-r from-orange-500 to-yellow-500 grid grid-cols-1 md:grid-cols-2'>
             {/* gird item 1 */}
             <div className='flex flex-col justify-center items-start gap-6 text-white'>
                 <h3 className={cn(srisakdi.className, "text-2xl font-bold")}>{caption}</h3>
                 <h1 className='font-bold text-5xl lg:text-8xl'>{heading}</h1>
                 <p className='text-sm text-[#FAFAFA]'>{description}</p>
                 <Button variant={'primary'} size={'lg'} onClick={handleClick}>
-                    <div>{buttonText}</div>
+                    <div>{buttonText ? buttonText :'Explore Now' }</div>
                     <Image src={'/icons/external-link.png'} alt='link' width={24} height={24} />
                 </Button>
             </div>
