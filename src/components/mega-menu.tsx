@@ -56,7 +56,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({
             {items.length>0 ? items?.map((item, index) => (
               // TODO updates items array with name and href
               <Link
-                href={"/category"}
+                href={`/category/${item?.id}`}
                 key={index}
                 onClick={() => onItemClick(item)}
                 className="transition-all duration-150 p-2 text-lg text-neutral-light hover:bg-[#DDDDDD] cursor-pointer"

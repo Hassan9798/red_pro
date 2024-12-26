@@ -73,32 +73,6 @@ const HomeCouponSection = () => {
           </Link>
         </div>
       </div> */}
-      {/* 
- //////CAROUSEL WORK START/// */}
-      {/* <Carousel>
-      <CarouselContent>
-        <div className="relative w-full overflow-hidden rounded-3xl h-full">
-          {cards && cards.length > 0 ? (
-            cards.map((item: any, index: number) => (
-              <CarouselItem key={index}>
-                <HomeCarouselCard
-                  caption={item.caption}
-                  heading={item.heading}
-                  description={item.description}
-                  buttonText={item.buttonText}
-                  handleClick={() => router.push('/category')}
-                  eventImgUrl={item.banner_image as string}
-                />
-              </CarouselItem>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No items available</p>
-          )}
-        </div>
-      </CarouselContent>
-    </Carousel> */}
-
-      {/* COUSREL WORK END */}
 
  <div className="rounded-3xl min-h-72">
 
@@ -112,7 +86,7 @@ const HomeCouponSection = () => {
             return (
             <CarouselItem key={index}>
                 <div className="h-[288px]" >
-                <HomeCarouselCard  caption={item.caption} heading={item.heading} description={item.description} buttonText={item.buttonText} handleClick={() => router.push('/category')} eventImgUrl={item.banner_image as string}/>
+                <HomeCarouselCard discount={true}  caption={item.caption} heading={item.heading} description={item.description} buttonText={item.buttonText} handleClick={() => router.push('/category')} eventImgUrl={item.banner_image as string}/>
                 </div>
             </CarouselItem>
           )})}

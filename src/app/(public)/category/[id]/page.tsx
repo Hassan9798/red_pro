@@ -5,11 +5,13 @@ import React from 'react'
 export const metadata: Metadata = {
   title: "Category",
 };
-
-const CategoryPage = () => {
+interface CategoryParams {
+  id?: number; // The `?` makes `id` optional if you want to handle `/category` as well.
+}
+const CategoryPage = ({ params }: { params:CategoryParams }) => {
   return (
     <>
-        <Category />
+        <Category params={params}/>
     </>
   )
 }

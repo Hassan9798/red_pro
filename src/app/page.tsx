@@ -1,3 +1,4 @@
+import HomeAllSalesSection from "@/components/home/home-all-sales-sections";
 import HomeBestRecipeSection from "@/components/home/home-best-recipe-section";
 import HomeBestSellingSection from "@/components/home/home-best-selling-section";
 import HomeCarousel from "@/components/home/home-carousel";
@@ -20,7 +21,9 @@ export default function Home() {
       <HomeCouponSection />
       <HomeDetailsSection />
       <HomeBestSellingSection />
-      <HomeBestRecipeSection />
+      <HomeAllSalesSection/>
+      {/* should be removed next component */}
+      {/* <HomeBestRecipeSection /> */} 
       <HomeLatestNewsSection />
     </main>
   );

@@ -67,7 +67,7 @@ const HomeCarousel = () => {
           {cards?.map((item:any, index:number) =>{
             return (
             <CarouselItem key={index}>
-                <HomeCarouselCard caption={item.caption} heading={item.heading} description={item.description} buttonText={item.buttonText} handleClick={() => router.push('/category')} eventImgUrl={item.banner_image as string}/>
+                <HomeCarouselCard caption={item.name} heading={item.name} description={item.name} buttonText={item.buttonText} handleClick={() => router.push('/category')} eventImgUrl={item.banner_image as string}/>
             </CarouselItem>
           )})}
         </CarouselContent>

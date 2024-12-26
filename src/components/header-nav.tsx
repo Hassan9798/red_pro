@@ -6,6 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { get } from "http";
 import { getCategories } from "@/api/home";
+import { useDispatch } from "react-redux";
+import { saveCategories } from "@/redux/home";
 
 const navItems = [
   { imgUrl: '/icons/fruit.png', text: 'Fruits', items: fruits, onItemClick: (item: string) => { console.log(item) } },
@@ -17,13 +19,13 @@ const navItems = [
 
 
 const HeaderNav = () => {
-
+  const disptach = useDispatch()
   const [categories, setCategories] = useState<Array<any>>([])
 
   useEffect(() => {
     getCategories().then((res) => {
-      console.log(res.data,"categories>>")
       setCategories(res.data.categories.data)
+      disptach(saveCategories(res.data.categories.data))
     })
       .catch((err) => {
         console.log(err)
@@ -39,7 +41,7 @@ const HeaderNav = () => {
           text={item.name}
           imgUrl={item.category_image}
           items={item.children}
-          onItemClick={item.onItemClick}
+          onItemClick={()=>console.log("item")}
         />
       ))}
       <Link href={'/recipies'}>

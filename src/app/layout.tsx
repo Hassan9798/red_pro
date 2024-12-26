@@ -1,10 +1,13 @@
+'use client'
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Suspense } from "react";
-
+import { Provider } from "react-redux";
+import { persistor, store } from "@/redux/store";
+import { PersistGate } from 'redux-persist/integration/react';
 const satoshi = localFont({
   src: [
     {
@@ -31,7 +34,7 @@ const satoshi = localFont({
   variable: '--font-satoshi'
 });
 
-export const metadata: Metadata = {
+ const metadata: Metadata = {
   title: "Red Produce",
   description: "Best vegetable store",
 };
@@ -42,6 +45,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <Provider store={store}>
+    {/* <PersistGate loading={null} persistor={persistor}> */}
     <html lang="en" suppressHydrationWarning={false}>
       <body className={`${satoshi.variable} font-sans flex flex-col justify-between overflow-x-hidden`}>
         <div className="px-8 md:px-12 flex flex-col divide-y divide-[#DDDDDD] w-full min-h-full">
@@ -55,5 +60,7 @@ export default function RootLayout({
         <Footer />
       </body>
     </html>
+    {/* </PersistGate>   */}
+    </Provider>
   );
 }
