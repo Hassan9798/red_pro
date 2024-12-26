@@ -14,14 +14,15 @@ import { GoChevronRight } from "react-icons/go";
 import ProductCarouselCard from "../product-carousel-card";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
-import { getAllProducts, getProductsByCategory, getProductsByPrice } from "@/api/home";
+import { getAllProducts, getAllSalesProducts, getProductsByCategory, getProductsByPrice } from "@/api/home";
 import { STORAGE_URL } from "@/config";
 
 export type Filters = "all" | "fruits" | "vegetables" | "deals" | "new";
 interface CategoryParams {
-  id?: number; 
+  id?: string; 
+  sales?:string;
 }
-const Category = ({ params }: { params: CategoryParams }) => {
+const Category = ({ id,sales }: { id?: string,sales?:string } ) => {
   const { categories } = useSelector(
     (state: RootState) => state.centeralizedStateData.home
   );
@@ -41,34 +42,33 @@ const Category = ({ params }: { params: CategoryParams }) => {
   ];
   // const totalPages = [1, 2, 3];
 
-  const [currentFilter, setCurrentFilter] = useState<any>(params?.id ?? null  );
+  const [currentFilter, setCurrentFilter] = useState<any>(id ?? null  );
   const [cat, setCat] = useState<Array<any>>([]);
-  const [currentCategory, setCurrentCategory] = useState(params?.id ??"All");
+  const [currentCategory, setCurrentCategory] = useState(id ??"All");
   const [price, setPrice] = useState([10]);
   // const [price, setPrice] = useState([10]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState<Array<number>>([])
   const [allProducts, setAllProducts] = useState<Array<any>>([]);
   const [total, setTotal] = useState(0)
-  const [catId,setCatId] = useState<number | null>(params?.id?? null)
-
+  const [catId,setCatId] = useState<string | undefined>(id)
 
   const handleFilter = (id: number) => {
     setCurrentFilter(id);
-    if(catId) setCatId(null)
+    if(catId) setCatId(undefined)
     setPrice([10])
   };
 
   const handleCategory = (category: string) => {
     setCurrentCategory(category);
-    if(catId) setCatId(null)
+    if(catId) setCatId(undefined)
     setPrice([10])
   };
 
   const handlePrice = (value: number[]) => {
     setCurrentFilter("price");
     setCurrentCategory("price");
-    if(catId) setCatId(null)
+    if(catId) setCatId(undefined)
     setPrice(value);
   };
 
@@ -112,14 +112,13 @@ const Category = ({ params }: { params: CategoryParams }) => {
 
   // fetching products
   useEffect(() => {
-    if (currentFilter === null && !catId) {
+    if (currentFilter === null && !catId && !sales ) {
       getAllProducts(null, { page }).then((res) => {
           setAllProducts([...res.data.data])
         if (res.data.data.length > 0) {
           setTotal(res.data.total)
           const arr= [];
           for (let i = 1; i <= Math.ceil(res.data.total/10); i++) {
-            console.log(i,"iii")
             arr.push(i)
           }
           setTotalPages(arr)
@@ -132,7 +131,29 @@ const Category = ({ params }: { params: CategoryParams }) => {
         console.log(err)
       })
     }
-    else if (currentFilter !== "price") {
+    else if (currentFilter === null  && !catId && sales) {
+      console.log("etc")
+          getAllSalesProducts(null,{page}).then((res) => {
+            // page === 1 ?
+            setAllProducts([...res.data.data])
+            // :
+            // setAllProducts([...allSalesProducts,...res.data.data])
+            if (res.data.data.length > 0) {
+              setTotal(res.data.total)
+              const arr= [];
+              for (let i = 1; i <= Math.ceil(res.data.total/10); i++) {
+                arr.push(i)
+              }
+              setTotalPages(arr)
+            }
+            else{
+              setTotal(0)
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+    }
+    else if (currentFilter !== "price" && currentFilter !== null) {
       getProductsByCategory('93|RkxOUacgowFISAEvQvLOZQa83ihce1hmhuhpgpe5a573563d', null, currentFilter??catId).then((res) => {
         setAllProducts(res.data) // this api response is different  and also doesnot support pagination
         if (res.data.length > 0) {
@@ -147,6 +168,7 @@ const Category = ({ params }: { params: CategoryParams }) => {
     }
   }, [page, currentFilter])
 
+  console.log("asd",currentFilter, catId , sales)
     return (
       <main className="w-full min-h-screen flex flex-col gap-8">
         <div className="flex py-12 items-start gap-4">
@@ -248,7 +270,7 @@ const Category = ({ params }: { params: CategoryParams }) => {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {allProducts.length > 0 ?
                 allProducts.map((item, index) => 
                   (

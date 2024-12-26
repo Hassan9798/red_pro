@@ -54,10 +54,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
       api?.scrollNext();
     }
   };
-  console.log(current,count,data.length)
+  console.log(current , "total",total)
   useEffect(() => {
     if(current === data.length && current !== 0 && total &&  data.length < total!){
-      console.log("limit reached ",current,data.length)
       setPage && page &&  setPage(page+1)
     }
   }, [current])
@@ -70,14 +69,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
     >
       <div className="w-full mb-4 flex justify-end items-center">
         <div
-          onClick={handlePreviousCarouselItem}
-          className="text-2xl text-black hover:text-primary cursor-pointer"
+          onClick={current !== 1 ? handlePreviousCarouselItem: ()=>{}}
+          className={`text-2xl ${current === 1 ?'text-gray-500' : 'text-black ' } hover:text-primary cursor-pointer`}
         >
           <FiChevronLeft />
         </div>
         <div
-          onClick={handleNextCarouselItem}
-          className="text-2xl text-black hover:text-primary cursor-pointer"
+          onClick={total && current !== total -1!? handleNextCarouselItem : () => {}}
+          className={`text-2xl ${total && current === total -1! ?'text-gray-500' : 'text-black ' } hover:text-primary cursor-pointer`}
         >
           <FiChevronRight />
         </div>

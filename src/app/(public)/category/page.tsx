@@ -1,22 +1,22 @@
-// 'use client'
+'use client'
 import Category from '@/components/category/category'
 import { Metadata } from 'next';
 import { useSearchParams } from 'next/navigation';
 import React from 'react'
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Category",
 };
 interface CategoryParams {
-  id?: string; // The `?` makes `id` optional if you want to handle `/category` as well.
+  sales?: string; // The `?` makes `id` optional if you want to handle `/category` as well.
 }
 const CategoryPage = ({ params }: { params:CategoryParams }) => {
-  // const searchParams = useSearchParams();
-  // const sales = searchParams.get('sales');
-  // const param={...params,sales} as CategoryParams
+  const searchParams = useSearchParams();
+  const sales = searchParams.get('sales');
+//   const param={sales} as CategoryParams
   return (
     <>
-        <Category id={params?.id as string} />
+        <Category sales={sales as string} />
     </>
   )
 }

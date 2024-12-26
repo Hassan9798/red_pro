@@ -60,15 +60,15 @@ const ProductCarouselCard: React.FC<ProductCarouselCardProps> = ({
         <h3 className="text-base font-bold line-clamp-1">{title}</h3>
         {description ? <p className="text-body text-sm line-clamp-1">{description}</p> : null}
       </div>
-      <div className="mt-3 flex items-center gap-4">
+      <div className={`mt-3 flex items-center gap-${discounted_price ? "3" : "4"}`}>
       {discounted_price &&
-       <div className={'text-base mr-auto font-medium text-black'}>{"$"+discounted_price}</div>}
+       <div className={`text-base mr-auto ${discounted_price && 'text-sm'} font-medium text-black`}>{"$"+discounted_price}</div>}
 
         {price &&
-         <div className={`text-base mr-auto font-medium ${discounted_price ? 'text-gray-500 line-through' : 'text-black'
+         <div className={`text-base mr-auto ${discounted_price && 'text-sm'} font-medium ${discounted_price ? 'text-gray-500 line-through' : 'text-black'
           }`}>{"$"+price}</div>
         }
-        <Button variant={"outline-primary"} size={"md"} onClick={handleClick}>
+        <Button variant={"outline-primary"} size={discounted_price?"sm":"md"} onClick={handleClick}>
           <div>{buttonText}</div>
           {buttonIcon ? buttonIcon : null}
         </Button>
