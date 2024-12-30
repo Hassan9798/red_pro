@@ -11,6 +11,7 @@ import ProductCarouselCard from "./product-carousel-card";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { STORAGE_URL } from "@/config";
 import noImage from "../../public/images/noImage.png";
+import Skeleton from "./skeleton/Skeleton";
 
 export interface ProductCarouselProps {
   carouselData: any[],
@@ -81,8 +82,9 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
           <FiChevronRight />
         </div>
       </div>
+  
       <CarouselContent className="">
-        {data.map((item: any, index: number) => (
+        {data.length>0? data.map((item: any, index: number) => (
           <CarouselItem
             key={index}
             className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
@@ -113,7 +115,22 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
               isFav={item?.isFav}
             /> */}
           </CarouselItem>
-        ))}
+        )):
+        // (
+          [1,2,3,4,5,6].map((x,i)=>
+         (
+           <div
+          // key={index}
+          className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5 "
+        >
+        <Skeleton className="w-268 h-52 ms-4 rounded-[10px] "/>
+        </div>
+        )
+          )
+
+        // )
+        }
+
       </CarouselContent>
       {/* <CarouselPrevious />
       <CarouselNext /> */}

@@ -8,6 +8,7 @@ import { get } from "http";
 import { getCategories } from "@/api/home";
 import { useDispatch } from "react-redux";
 import { saveCategories } from "@/redux/home";
+import Skeleton from "./skeleton/Skeleton";
 
 const navItems = [
   { imgUrl: '/icons/fruit.png', text: 'Fruits', items: fruits, onItemClick: (item: string) => { console.log(item) } },
@@ -34,7 +35,7 @@ const HeaderNav = () => {
 
   return (
     <nav className="flex justify-center sm:justify-start items-center gap-2 sm:gap-4 xl:gap-8 flex-wrap">
-      {categories?.map((item: any, index: number) => (
+      {categories.length > 0 ?categories?.map((item: any, index: number) => (
         // <NavItem imgUrl={item.imgUrl} text={item.text} key={index}/>
         <MegaMenu
           key={index}
@@ -43,7 +44,14 @@ const HeaderNav = () => {
           items={item.children}
           onItemClick={()=>console.log("item")}
         />
-      ))}
+      )):
+      (<>
+      <Skeleton className="w-8 h-12 md:h-20 md:w-16 sm:w-8 sm:h-12 rounded"/>
+      <Skeleton className="w-8 h-12 md:h-20 md:w-16 sm:w-8 sm:h-12 rounded"/>
+      </>
+
+      )
+      }
       <Link href={'/recipies'}>
         <div className="flex flex-col justify-center items-center text-center gap-2 text-[10px] sm:text-sm text-neutral-light cursor-pointer group">
           <Image

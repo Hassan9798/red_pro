@@ -11,6 +11,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { getPromotionDiscount } from "@/api/home";
 import FruitBucket from "../../../public/images/fruit-bucket.png";
 import { useRouter } from "next/navigation";
+import Skeleton from "../skeleton/Skeleton";
 const cards = [
   { caption: 'Taste Of Nature', heading: 'Eat Clean & Organic', description: 'The most biggest sale event in this year you dont want to miss', buttonText: 'Shop Now', handleClick: () => { console.log("Clicked banner card button") }, eventImgUrl: FruitBucket },
   { caption: 'Taste Of Nature', heading: 'Eat Clean & Organic', description: 'The most biggest sale event in this year you dont want to miss', buttonText: 'Shop Now', handleClick: () => { console.log("Clicked banner card button") }, eventImgUrl: FruitBucket },
@@ -42,7 +43,6 @@ const HomeCouponSection = () => {
   }
   useEffect(() => {
     getPromotionDiscount().then((res) => {
-      console.log('okokok',res.data)
       setCards(res.data)
 
     }).catch((err) => {
@@ -76,7 +76,7 @@ const HomeCouponSection = () => {
 
  <div className="rounded-3xl min-h-72">
 
-      <Carousel setApi={setApi} className="relative w-full "  opts={{loop: true }} plugins={[
+      {cards.length>0 ? (<Carousel setApi={setApi} className="relative w-full "  opts={{loop: true }} plugins={[
         Autoplay({
           delay: 3000,
         }),
@@ -98,7 +98,9 @@ const HomeCouponSection = () => {
           </div>
         {/* <CarouselPrevious />
         <CarouselNext /> */}
-      </Carousel>
+      </Carousel>):(
+        <Skeleton className="w-full h-full rounded-[18px]" />
+      )}
 </div>
 
 

@@ -9,6 +9,7 @@ import { FiChevronRight } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { getFeaturedProducts, getProductsByCategory } from "@/api/home";
+import Skeleton from "../skeleton/Skeleton";
 
 export type Filters = "all" | "fruits" | "vegetables" | "deals" | "new";
 
@@ -91,13 +92,14 @@ const HomeBestSellingSection = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Array<any>>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0)
+  const [isLoading, setIsLoading] = useState(true);
   const handleFilter = (index: number) => {
     setCurrentFilter(index);
   };
 
   useEffect(() => {
     setCat([{name:"All",id:null},...categories])
-
+    setIsLoading(false)
   }, [categories])
 
   useEffect(() => {
@@ -128,6 +130,7 @@ const HomeBestSellingSection = () => {
   }, [page,currentFilter])
   console.log(total,"total selling")
   return (
+    
     <div className="flex flex-col gap-6 w-full">
       {/* flex item 1 */}
       <div className="w-full flex justify-between items-start md:items-center gap-4">
@@ -145,7 +148,9 @@ const HomeBestSellingSection = () => {
       <div className="flex flex-col md:flex-row gap-6 md:items-center">
         <div className="text-sm">Shop by:</div>
         <div className="flex gap-4 items-center flex-wrap">
-          {cat.length > 0 && cat.map((item, index) =>
+          {
+          // isLoading === false?
+           cat.map((item, index) =>
           index <= 3 && (
             <Button
               key={index}
@@ -162,26 +167,30 @@ const HomeBestSellingSection = () => {
               />
               <div className="capitalize">{item.name}</div>
             </Button>
-          ))}
+          ))
+        
+          // :
+          // (<Skeleton className="h-12 rounded-full px-8" />)
+          }
         </div>
       </div>
       {/* flex item 3 */}
-      { featuredProducts.length > 0 ?
+      {/* { featuredProducts.length > 0 ? */}
       <ProductCarousel carouselData={featuredProducts} setPage={setPage} page={page} total={total!} />
-      :
-      <div className="flex items-center justify-center h-[300px]">
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-          </div>
-          <div className="text-primary">No products found</div>
-        </div>
-      </div>
-      }
+      {/* // :
+      // <div className="flex items-center justify-center h-[300px]">
+      //   <div className="flex flex-col items-center gap-2">
+      //     <div className="flex items-center gap-2">
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //     </div>
+      //     <div className="text-primary">No products found</div>
+      //   </div>
+      // </div>
+      // } */}
     </div>
   );
 };

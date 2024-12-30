@@ -15,6 +15,7 @@ import HomeCarouselCard from "./home-carousel-card";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { getSalesBanners } from "@/api/home";
+import Skeleton from "../skeleton/Skeleton";
 
 const cards = [
     {caption: 'Taste Of Nature', heading: 'Eat Clean & Organic', description: 'The most biggest sale event in this year you dont want to miss', buttonText: 'Shop Now', handleClick: () => { console.log("Clicked banner card button")}, eventImgUrl: FruitBucket },
@@ -58,7 +59,8 @@ const HomeCarousel = () => {
   //  console.log(res,"ressss")
   // }
   return (
-    <Carousel setApi={setApi} className="relative w-full" opts={{loop: true }} plugins={[
+    cards.length > 0 ?
+  (  <Carousel setApi={setApi} className="relative w-full" opts={{loop: true }} plugins={[
         Autoplay({
           delay: 3000,
         }),
@@ -78,7 +80,10 @@ const HomeCarousel = () => {
           </div>
         {/* <CarouselPrevious />
         <CarouselNext /> */}
-      </Carousel>
+      </Carousel>)
+      :(
+        <Skeleton className="w-full h-[400px] rounded-[18px]" />
+      )
   );
 };
 

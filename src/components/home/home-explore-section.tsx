@@ -164,22 +164,22 @@ const HomeExploreSection = () => {
         </div>
       </div>
       {/* flex item 3 */}
-      { allProducts.length > 0 ?
+      {/* { allProducts.length > 0 ? */}
       <ProductCarousel carouselData={allProducts} setPage={setPage} page={page} total={total!} />
-      :
-      <div className="flex items-center justify-center h-[300px]">
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-            <BsStars className="block" />
-          </div>
-          <div className="text-primary">No products found</div>
-        </div>
-      </div>
-      }
+      {/* // :
+      // <div className="flex items-center justify-center h-[300px]">
+      //   <div className="flex flex-col items-center gap-2">
+      //     <div className="flex items-center gap-2">
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //       <BsStars className="block" />
+      //     </div>
+      //     <div className="text-primary">No products found</div>
+      //   </div>
+      // </div> */}
+      {/* } */}
     </div>
   );
 };
