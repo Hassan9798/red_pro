@@ -8,6 +8,8 @@ import { Suspense } from "react";
 import { Provider } from "react-redux";
 import { persistor, store } from "@/redux/store";
 import { PersistGate } from 'redux-persist/integration/react';
+import { Toaster } from "react-hot-toast";
+
 const satoshi = localFont({
   src: [
     {
@@ -34,7 +36,7 @@ const satoshi = localFont({
   variable: '--font-satoshi'
 });
 
- const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Red Produce",
   description: "Best vegetable store",
 };
@@ -45,22 +47,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider store={store}>
-    {/* <PersistGate loading={null} persistor={persistor}> */}
     <html lang="en" suppressHydrationWarning={false}>
       <body className={`${satoshi.variable} font-sans flex flex-col justify-between overflow-x-hidden`}>
-        <div className="px-8 md:px-12 flex flex-col divide-y divide-[#DDDDDD] w-full min-h-full">
-          <Header />
-          <div className="py-6 md:py-8 w-full min-h-full flex flex-col">
-            <Suspense fallback={<div>Loading...</div>}>
-              {children}
-            </Suspense>
-          </div>
-        </div>
-        <Footer />
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <Toaster position="bottom-center"
+              reverseOrder={false}
+              toastOptions={{
+                success: { style: { background: "green", color: "white" } },
+                error: { style: { background: "red", color: "white" } },
+              }}
+            />
+            <div className="px-8 md:px-12 flex flex-col divide-y divide-[#DDDDDD] w-full min-h-full">
+              <Header />
+              <div className="py-6 md:py-8 w-full min-h-full flex flex-col">
+                <Suspense fallback={<div>Loading...</div>}>
+                  {children}
+                </Suspense>
+              </div>
+            </div>
+            <Footer />
+          </PersistGate>
+        </Provider>
       </body>
     </html>
-    {/* </PersistGate>   */}
-    </Provider>
+
   );
 }

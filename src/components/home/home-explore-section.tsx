@@ -9,6 +9,7 @@ import { FiChevronRight } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { getAllProducts, getProductsByCategory } from "@/api/home";
+import Skeleton from "../skeleton/Skeleton";
 
 export type Filters = "all" | "fruits" | "vegetables" | "deals" | "new";
 
@@ -81,13 +82,14 @@ const HomeExploreSection = () => {
   );
 
   // const filters = ["all", "fruits", "vegetables", "deals", "new"];
-
+  const array = [1, 2, 3, 4, 5];
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const [cat, setCat] = useState<Array<any>>([]);
   const [allProducts, setAllProducts] = useState<Array<any>>([]);
   const [page , setPage] = useState(1);
   const [total,setTotal] = useState(0)
-
+  
+  
   const handleFilter = (id: number) => {
     setCurrentFilter(id);
   };
@@ -164,8 +166,27 @@ const HomeExploreSection = () => {
         </div>
       </div>
       {/* flex item 3 */}
-      {/* { allProducts.length > 0 ? */}
+      { allProducts.length>0 ?
       <ProductCarousel carouselData={allProducts} setPage={setPage} page={page} total={total!} />
+      :
+      (
+        <div
+        className="
+          grid gap-4 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          xl:grid-cols-5"
+      >
+        {array.map((_, i) => (
+          <div key={i}>
+            <Skeleton className="w-full h-52 rounded-[12px]" />
+          </div>
+        ))}
+      </div>
+      )
+      }
       {/* // :
       // <div className="flex items-center justify-center h-[300px]">
       //   <div className="flex flex-col items-center gap-2">
@@ -179,7 +200,7 @@ const HomeExploreSection = () => {
       //     <div className="text-primary">No products found</div>
       //   </div>
       // </div> */}
-      {/* } */}
+      {/* // } */}
     </div>
   );
 };

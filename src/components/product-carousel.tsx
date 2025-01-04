@@ -12,6 +12,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { STORAGE_URL } from "@/config";
 import noImage from "../../public/images/noImage.png";
 import Skeleton from "./skeleton/Skeleton";
+import toast from "react-hot-toast";
 
 export interface ProductCarouselProps {
   carouselData: any[],
@@ -84,10 +85,10 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
       </div>
   
       <CarouselContent className="">
-        {data.length>0? data.map((item: any, index: number) => (
+        {data.length>0 && data.map((item: any, index: number) => (
           <CarouselItem
             key={index}
-            className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
+            className="basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
           >{item.is_active === 1 && (
              <ProductCarouselCard
               key={index}
@@ -97,7 +98,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
               imgUrl={item.imgUrl?item.imgUrl: item.product_images.length == 1? STORAGE_URL + item.product_images[0] : STORAGE_URL + item.product_images[1] } 
               price={item.inventories && item.inventories.length > 0 ? item.inventories[0].price : item?.price}
               discounted_price={item.inventories && item.inventories.length > 0 ? item.inventories[0].discounted_price : item?.discounted_price}
-              handleClick={()=>console.log(`Add to cart ${item.name}`)}
+              handleClick={()=>item.inventories && item.inventories.length > 0 ?console.log(`Add to cart ${item.name}`):toast.error("Cannot add to cart this product")}
               buttonIcon={item?.buttonIcon}
               isBookmark={item?.isBookmark??true}
               isFav={item?.isFav??true}
@@ -115,18 +116,19 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({ carouselData , setPag
               isFav={item?.isFav}
             /> */}
           </CarouselItem>
-        )):
+        ))
+        // :
         // (
-          [1,2,3,4,5,6].map((x,i)=>
-         (
-           <div
-          // key={index}
-          className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5 "
-        >
-        <Skeleton className="w-268 h-52 ms-4 rounded-[10px] "/>
-        </div>
-        )
-          )
+        //   [1,2,3,4,5,6].map((x,i)=>
+        //  (
+        //    <div
+        //   // key={index}
+        //   className="basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5 "
+        // >
+        // <Skeleton className="w-268 h-52 ms-4 rounded-[10px] "/>
+        // </div>
+        // )
+        //   )
 
         // )
         }

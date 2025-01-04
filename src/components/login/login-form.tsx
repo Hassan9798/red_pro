@@ -4,6 +4,11 @@ import React from 'react';
 import * as Yup from "yup";
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { login, saveTokenToCookie } from '@/api/auth';
+import {toast} from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '@/redux/auth';
+import { useRouter } from 'next/router';
 
 const validationSchema = Yup.object().shape({
     fullName: Yup.string().required("Full name is required").max(50, "Only 50 characters are allowed"),
@@ -12,7 +17,9 @@ const validationSchema = Yup.object().shape({
     confirmPassword: Yup.string().required("Confirm Password is required").min(8).max(24),
 })
 
-const LoginForm = () => {
+const LoginForm = ({router}:any) => {
+    
+    const dispatch =  useDispatch();
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -23,9 +30,30 @@ const LoginForm = () => {
             console.log(values);
         },
     })
+
+    const handleClick = async(e:any) => {
+        e.preventDefault();
+        if(!formik.errors.email && !formik.errors.password){
+        login(formik.values.email, formik.values.password)
+        .then((res) => {
+            console.log(res,"res");
+            if(res.status === 200){
+                toast.success(res.data.message);
+                dispatch(setLogin(res.data))
+                saveTokenToCookie(res.data.token)
+                router.push("/")
+            }
+        })
+        .catch((err) => {
+            console.log(err.response.data.error);
+            toast.error(err.response.data.error)
+        })
+        }
+    }
+
   return (
     <div className='shadow-2xl w-full sm:max-w-screen-md min-h-full p-8 sm:p-16 bg-white rounded-3xl sm:rounded-[100px] flex flex-col'>
-        <form className='my-auto w-full flex flex-col justify-center gap-8'>
+        <form className='my-auto w-full flex flex-col justify-center gap-8' onSubmit={handleClick}>
             <h3 className='text-3xl sm:text-4xl'>Login to your account</h3>
             <div className='flex flex-col gap-3'>
                 <div className='flex flex-col gap-2'>
@@ -39,7 +67,7 @@ const LoginForm = () => {
                         className='placeholder:text-[#5A5A5A] text-lg py-2 outline-none border-b border-[#5A5A5A] focus-visible:border-primary'
                     />
                     {/* error */}
-                    {(formik.touched.email && Boolean(formik.errors.email)) && typeof formik.errors.email === "string" ? (
+                    {( Boolean(formik.errors.email)) && typeof formik.errors.email === "string" ? (
                         <div className='text-red-500 text-sm'>{formik.errors.email}</div>
                     ) : null}
                 </div>
@@ -54,12 +82,12 @@ const LoginForm = () => {
                         className='placeholder:text-[#5A5A5A] text-lg py-2 outline-none border-b border-[#5A5A5A] focus-visible:border-primary'
                     />
                     {/* error */}
-                    {(formik.touched.password && Boolean(formik.errors.password)) && typeof formik.errors.password === "string" ? (
+                    {( Boolean(formik.errors.password)) && typeof formik.errors.password === "string" ? (
                         <div className='text-red-500 text-sm'>{formik.errors.password}</div>
                     ) : null}
                 </div>
             </div>
-            <Button variant={'primary'} size={'xl'} >Login</Button>
+            <Button variant={'primary'} type='submit' size={'xl'} >Login</Button>
             <div className='text-base font-medium'>Don't Have An Account?&nbsp;<Link href={'/sign-up'} className='text-primary underline decoration-primary'>Signup</Link></div>
         </form>
     </div>
