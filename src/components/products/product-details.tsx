@@ -3,14 +3,89 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React, { useEffect, useState } from "react";
 
-import { IoIosStar, IoMdHeart } from "react-icons/io";
-import { BsCart } from "react-icons/bs";
+import { IoIosStar, IoIosStarHalf, IoIosStarOutline, IoMdHeart } from "react-icons/io";
+import { BsCart, BsStars } from "react-icons/bs";
 import { Button } from "../ui/button";
 import ReviewForm from "./review-form";
+import { getProductDetails } from "@/api/products";
+import { STORAGE_URL } from "@/config";
+import toast from "react-hot-toast";
+import { addItem, decQuantity, incQuantity } from "@/redux/cart";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useRouter } from "next/navigation";
 
-const ProductDetails = () => {
+const ProductDetails = ({ id }: any) => {
+  const router = useRouter()
+  const cart = useSelector((state: RootState) => state.centeralizedStateData.cart)
+  const dispatch = useDispatch()
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [counter, setCounter] = useState(1);
+  const [product, setProduct] = useState<any>(null);
+  const [inventory, setInventory] = useState<any>(null);
+  const [currentInventoryIndex, setCurrentInventoryIndex] = useState(0);
+
+  const points = product?.product?.description.split('.').map((point: any) => point.trim()).filter((point: any) => point);
+  const itemCartDetails = cart?.items?.find((item: any) => item.product.id === product?.product?.id && item.product.vendor_id === product?.product?.vendor_id)
+  const maxStars = 5;
+  const fullStars = product ? Math.floor(product?.average_rating) : 0;
+  const halfStar = product ? product?.average_rating % 1 >= 0.5 ? 1 : 0 : 0;
+  const emptyStars = product ? maxStars - fullStars - halfStar : 5;
+
+  useEffect(() => {
+    getProductDetails(id).then((res) => {
+      setProduct(res)
+      // console.log(res,"res detail")
+      setInventory(res.product.inventories[0] ?? {})
+    })
+      .catch((err) => {
+        console.log(err);
+      })
+  }, [id])
+
+  const handleInventory = (item: any) => {
+    // setCurrentInventoryIndex(index)
+    setInventory(item)
+  }
+  const handleAddToCart = (item: any) => {
+    const obj = {
+      category_id: item.category_id,
+      vendor_id: item.vendor_id,
+      id: item.id,
+      description: item.description,
+      inventory_id: item.inventories[0].id,
+      grade_id: item.inventories[0].grade_id,
+      price: parseInt(item.inventories[0].discounted_price ?? item.inventories[0].price),
+      quantity: counter,
+      image: JSON.parse(item.inventories[0].inventory_image)[0],
+      size: item.inventories[0].size,
+      name: item.name,
+    }
+    dispatch(addItem(obj))
+  }
+
+  const handleQuantity = (change: "increment" | "decrement") => {
+    const obj = {
+      product: {
+        id: product?.product?.id,
+        vendor_id: product?.product?.vendor_id,
+        price: parseInt(inventory?.discounted_price ?? inventory.price),
+        total: itemCartDetails?.total
+      }
+    }
+    if (change === "increment") {
+      dispatch(incQuantity(obj))
+    }
+    else {
+      dispatch(decQuantity(obj))
+    }
+  };
+
+  const handleBuyNow = (item: any) => {
+    handleAddToCart(item)
+    router.push("/checkout")
+  }
 
   return (
     <div className="py-8 lg:py-12 w-full flex flex-col gap-8">
@@ -18,7 +93,7 @@ const ProductDetails = () => {
       <div className="flex flex-col lg:flex-row gap-5 justify-start items-start min-h-[816px] h-full">
         {/* gallery items */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:basis-[198px] lg:flex-shrink-0 h-full lg:max-h-[816px] lg:flex lg:flex-col lg:flex-nowrap order-1 lg:order-none gap-5 overflow-y-auto">
-          {galleryItems?.map((item, index) => (
+          {product?.product?.product_images?.map((item: any, index: any) => (
             <div
               key={index}
               className={cn(
@@ -28,7 +103,7 @@ const ProductDetails = () => {
               onClick={() => setCurrentImageIndex(index)}
             >
               <img
-                src={item}
+                src={STORAGE_URL + item}
                 alt="img"
                 className="object-contain object-center w-full h-full aspect-square lg:aspect-auto"
               />
@@ -38,7 +113,7 @@ const ProductDetails = () => {
         {/* current image */}
         <div className="relative bg-[#F1F1F1] flex justify-center items-center order-none xl:w-[526px] 2xl:w-[682px] lg:h-[816px] aspect-square lg:aspect-auto md:mx-auto">
           <img
-            src={galleryItems[currentImageIndex]}
+            src={STORAGE_URL + product?.product?.product_images[currentImageIndex]}
             alt="img"
             className="object-contain object-center w-full h-full"
           />
@@ -46,38 +121,39 @@ const ProductDetails = () => {
         {/* details */}
         <div className="flex flex-col order-2 lg:order-none gap-6 text-base">
           <div className="flex flex-col gap-1">
-            <div>Category: Apple</div>
+            <div>Category: {product?.product?.category?.name}</div>
             <div>
-              Availability: <span className="text-green-500">in Stock</span>
+              Availability: <span className="text-green-500">{product?.product?.inventories?.length > 0 ? "in Stock" : "Out of Stock"}</span>
             </div>
             <div>Region: USA</div>
           </div>
           <div className="flex flex-col gap-2">
-            <div className="text-3xl font-semibold">APPLE</div>
+            <div className="text-3xl font-semibold">{product?.product?.name}</div>
             <div className="flex gap-1 items-center text-xl">
-              <IoIosStar className="text-primary" />
-              <IoIosStar className="text-primary" />
-              <IoIosStar className="text-primary" />
-              <IoIosStar className="text-primary" />
-              <IoIosStar className="text-[#D4D4D4]" />
+              {Array.from({ length: fullStars }).map((_, i) => (
+                <IoIosStar key={`full-${i}`} className="text-primary" />
+              ))}
+              {halfStar === 1 && <IoIosStarHalf className="text-primary" />}
+              {Array.from({ length: emptyStars }).map((_, i) => (
+                <IoIosStarOutline key={`empty-${i}`} className="text-[#D4D4D4]" />
+              ))}
             </div>
             <ul className="ml-5 list-disc font-light text-[#191919]">
-              <li>
-                Apples are rich in dietary fiber, promoting digestive health and
-                aiding
-              </li>
-              <li>
-                Apples are rich in dietary fiber, promoting digestive health
-              </li>
-              <li>Apples are rich in dietary fiber, promoting</li>
-              <li>Apples are rich in dietary fiber</li>
+              {
+                points?.map((point: any, i: number) =>
+                (<li>
+                  {point}
+                </li>
+                )
+                )
+              }
             </ul>
           </div>
           <div className="flex justify-between items-center gap-4 text-sm pb-3 border-b border-[#F0F0F0] flex-wrap whitespace-nowrap">
             <div className="text-primary">
-              Quantity Available: <span className="font-semibold">1000</span>
+              Quantity Available: <span className="font-semibold">{inventory?.quantity ?? "0"}</span>
             </div>
-            <div className="flex gap-2 sm:gap-0 sm:items-center flex-col sm:flex-row">
+            {/* <div className="flex gap-2 sm:gap-0 sm:items-center flex-col sm:flex-row">
               <div>Only 500+ Left&nbsp;&nbsp;</div>
               <div>
                 <span className="font-semibold">Qty</span>&nbsp;&nbsp;
@@ -86,100 +162,55 @@ const ProductDetails = () => {
                   placeholder="Enter your Quantity Here"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-col gap-2">
             <div>Sizes</div>
             <div className="flex justify-start items-center gap-3 flex-wrap">
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                3 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                5 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                6 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                7 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                8 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                9 Kg
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                10 Kg
-              </Button>
+              {product?.product?.inventories?.length > 0 ?
+                product?.product?.inventories?.map((item: any, i: number) => (
+                  <Button
+                    variant={inventory?.id === item.id ? "primary" : "outline-primary"}
+                    size={"lg"}
+                    className={cn("rounded-none")}
+                    type="submit"
+                    onClick={() => handleInventory(item)}
+                  >
+                    {item.sizes}
+                  </Button>
+                ))
+                :
+                <BsStars className="block" />
+              }
             </div>
           </div>
           <div className="flex flex-col gap-2 pb-3 border-b border-[#F0F0F0]">
             <div>Grades</div>
             <div className="flex justify-start items-center gap-3 flex-wrap">
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                US Extra Fancy
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                US Fancy
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                US N0 1
-              </Button>
-              <Button
-                variant={"outline-primary"}
-                size={"lg"}
-                className={cn("rounded-none")}
-              >
-                US UTILITY
-              </Button>
+              {product?.product?.inventories?.length > 0 ?
+                product?.product?.inventories?.map((item: any) => (
+
+                  <Button
+                    variant={inventory?.id === item.id ? "primary" : "outline-primary"}
+                    size={"lg"}
+                    className={cn("rounded-none")}
+                    type="submit"
+                    onClick={() => handleInventory(item)}
+                  >
+                    {item.grade.name}
+                  </Button>
+                ))
+                :
+                <BsStars className="block" />
+              }
+
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <div>USD(incl. of all taxes):</div>
             <div className="text-3xl">
-              $600.72&nbsp;
-              <span className="text-[#D9D9D9] line-through">$800.00</span>
+              {inventory && '$' + inventory?.discounted_price ? inventory?.discounted_price : inventory?.price} &nbsp;
+              {inventory?.discounted_price && <span className="text-[#D9D9D9] line-through">${inventory?.price}</span>}
             </div>
           </div>
           <div className="flex gap-5 items-stretch flex-wrap text-2xl">
@@ -188,16 +219,20 @@ const ProductDetails = () => {
                 className="cursor-pointer py-2 px-4 flex justify-center items-center"
                 onClick={() => {
                   counter > 1 ? setCounter(counter - 1) : undefined;
+                  handleQuantity("decrement")
                 }}
               >
                 -
               </div>
               <div className="py-2 px-4 flex justify-center items-center border-l border-r border-[#F0F0F0]">
-                {counter}
+                {itemCartDetails?.quantity ?? counter}
               </div>
               <div
                 className="cursor-pointer py-2 px-4 flex justify-center items-center"
-                onClick={() => setCounter(counter + 1)}
+                onClick={() => {
+                  setCounter(counter + 1);
+                  handleQuantity("increment")
+                }}
               >
                 +
               </div>
@@ -207,6 +242,9 @@ const ProductDetails = () => {
                 variant={"primary"}
                 size={"xl"}
                 className="rounded-none text-white text-sm"
+                type="submit"
+                disabled={product?.product?.inventories.length > 0 ? false : true}
+                onClick={() => handleBuyNow(product.product)}
               >
                 Buy Now
               </Button>
@@ -214,6 +252,9 @@ const ProductDetails = () => {
                 variant={"outline-primary"}
                 size={"xl"}
                 className="rounded-none"
+                type="submit"
+                disabled={product?.product?.inventories.length > 0 ? false : true}
+                onClick={() => { handleAddToCart(product.product); toast.success("Item added to cart") }}
               >
                 Add to Cart
               </Button>
@@ -228,6 +269,7 @@ const ProductDetails = () => {
           </TabsTrigger>
           <TabsTrigger className="text-lg" value="reviews">
             Reviews
+            <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-0 dark:border-gray-900">{product?.total_ratings}</span>
           </TabsTrigger>
         </TabsList>
         <TabsContent value="description" className="w-[calc(100%-8px)] lg:w-[60%] mx-auto py-8">
@@ -257,7 +299,7 @@ const ProductDetails = () => {
           </div>
         </TabsContent>
         <TabsContent value="reviews" className="w-[calc(100%-8px)] lg:w-[60%] mx-auto py-8">
-            <ReviewForm />
+          <ReviewForm />
         </TabsContent>
       </Tabs>
       <div className="flex flex-col gap-8">

@@ -7,8 +7,25 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdAccountCircle } from "react-icons/md";
 import { FaHeadphones } from "react-icons/fa6";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "./ui/button";
+import { RootState } from "@/redux/store";
+import { setLogout } from "@/redux/auth";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
-const Header = () => {
+const Header = ({ router }: any) => {
+  const user = useSelector((state: RootState) => state.centeralizedStateData.user);
+  const cart = useSelector((state: RootState) => state.centeralizedStateData.cart);
+
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(setLogout());
+    toast.success("Logout");
+    Cookies.set('token', '', { expires: 7 });
+  };
+
   return (
     <header className="py-4 md:py-6 flex flex-col gap-4 md:gap-6">
       <div className="flex flex-col md:flex-row items-center gap-6 divide-y md:divide-y-0 md:divide-x divide-[#DDDDDD] w-full">
@@ -39,11 +56,15 @@ const Header = () => {
           </Link>
           {/* for mobile */}
           <Link
-              href={"/shopping-cart"}
-              className="sm:hidden text-neutral-light hover:text-primary"
-            >
+            href={"/shopping-cart"}
+            className="sm:hidden text-neutral-light hover:text-primary"
+          >
+            <div className="relative inline-flex items-center p-3 text-sm font-medium text-center   rounded-lg  focus:ring-4 focus:outline-none">
               <FiShoppingCart className="text-3xl sm:text-5xl" />
-            </Link>
+              <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-0 dark:border-gray-900">{cart.quantity}</div>
+            </div>
+          </Link>
+
         </div>
         <div className="pt-4 md:pt-0 md:pl-8 grid grid-cols-2 lg:flex lg:flex-row justify-between items-center gap-3 w-full">
           {/* item 1 */}
@@ -75,19 +96,32 @@ const Header = () => {
           {/* item 3 */}
           <div className="hidden sm:flex flex-col gap-2 px-4">
             <div className="text-sm font-medium">Account</div>
-            <div className="flex gap-2 items-center">
-              <NavLink href="/login" text="Login" />
-              <div className="text-sm text-neutral-light">or</div>
-              <NavLink href="/sign-up" text="Create Account" />
-            </div>
+            {!user.isLoggedIn && !user.token ?
+              (<div className="flex gap-2 items-center">
+                <NavLink href="/login" text="Login" />
+                <div className="text-sm text-neutral-light">or</div>
+                <NavLink href="/sign-up" text="Create Account" />
+              </div>)
+              :
+              (
+                <div className="flex gap-2 items-center">
+                  <Button variant={'outline-primary'} type="button" size={'sm'} onClick={handleLogout}>
+                    <NavLink href="/login" text="Logout" />
+                  </Button>
+                </div>
+              )
+            }
           </div>
           {/* item 4 */}
-          <div className="hidden sm:block cursor-pointer ml-auto mr-2 sm:mx-0">
+          <div className="hidden sm:block cursor-pointer ml-auto mr-2 sm:mx-0 relative">
             <Link
               href={"/shopping-cart"}
               className="text-neutral-light hover:text-primary"
             >
-              <FiShoppingCart className="text-3xl sm:text-5xl" />
+              <div className="relative inline-flex items-center p-3 text-sm font-medium text-center   rounded-lg  focus:ring-4 focus:outline-none">
+                <FiShoppingCart className="text-3xl sm:text-5xl" />
+                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-0 dark:border-gray-900">{cart.quantity}</div>
+              </div>
             </Link>
           </div>
         </div>

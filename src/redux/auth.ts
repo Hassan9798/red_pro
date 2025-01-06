@@ -2,8 +2,35 @@ import { Roles } from "@/constant";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import { jwtPayload, RoleEnum } from "../types/generalTypes";
 
-
-const INITIAL_STATE = {
+export type TUser={
+  id: number,
+  first_name: null | string,
+  last_name: null | string,
+  username: string,
+  mobile: string,
+  email: string,
+  avatar: any,
+  password: string,
+  verification_token: null | string,
+  is_email_verified: string | Date,
+  is_active: boolean,
+  is_deleted: boolean,
+  created_at: string | Date,
+  updated_at: string | Date,
+  deleted_at: any,
+  type: string,
+  fcm_token: string
+}
+type initialState = {
+  isLoggedIn: boolean;
+  token: string;
+  expiresIn: number;
+  refreshExpiresIn: number;
+  refreshToken: string;
+  role: string;
+  user: TUser | null;
+}
+const INITIAL_STATE: initialState = {
   isLoggedIn: false,
   token: "",
   expiresIn: 0,
@@ -13,7 +40,7 @@ const INITIAL_STATE = {
   user: null,
  
 
-};
+} ;
 
 const authSlice = createSlice({
   name: "auth",

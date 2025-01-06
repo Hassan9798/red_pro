@@ -167,7 +167,7 @@ const HomeExploreSection = () => {
       </div>
       {/* flex item 3 */}
       { allProducts.length>0 ?
-      <ProductCarousel carouselData={allProducts} setPage={setPage} page={page} total={total!} />
+      <ProductCarousel carouselData={allProducts} setPage={setPage} page={page} total={total!}  />
       :
       (
         <div

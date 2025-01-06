@@ -58,7 +58,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ params }) => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <ProductDetails />
+      <ProductDetails id={params.id} />
     </main>
   );
 };

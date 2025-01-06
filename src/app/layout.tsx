@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "@/redux/store";
 import { PersistGate } from 'redux-persist/integration/react';
 import { Toaster } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 const satoshi = localFont({
   src: [
@@ -46,6 +47,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // const router = useRouter();
   return (
     <html lang="en" suppressHydrationWarning={false}>
       <body className={`${satoshi.variable} font-sans flex flex-col justify-between overflow-x-hidden`}>

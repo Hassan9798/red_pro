@@ -1,10 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
 export type CartState = {
   items: {
-    products:Array<any>,
+    product:any
     quantity: number,
     total: number
-  }[] | null,
+  }[] ,
   quantity: number,
   total: number
 }
@@ -18,48 +18,41 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state,action)=>{
-
+      // if(state.items.length > 0){
+        const arr= [...state.items]
+        const newData = arr?.filter(
+                (item:any) => item.product.id == action.payload.id && item.product.vendor_id === action.payload.vendor_id,
+              );
+        if (newData.length > 0) {
+          const oldState = arr?.filter(
+            (item:any) => item.product.id !== action.payload.id && item.product.vendor_id === action.payload.vendor_id,
+          );
+          console.log(oldState,"old")
+          newData[0].quantity+=1
+          newData[0].total+=newData[0].product.price
+          console.log(newData[0],"new")
+          state.items = [...oldState,...newData]
+          state.total = state.total + newData[0].product.price;
+          console.log(state.total,"total")
+          // console.log('product already added to the cart');
+        } else {
+          // console.log(item.id, action.payload._id);
+          state.items.push({product:action.payload,quantity:action.payload.quantity??1,total:action.payload.price});
+          state.quantity += 1;
+          state.total = state.total + (action.payload.price * (action.payload.quantity??1));
+        }
+      // }
+    },
+  
+    deleteProduct: (state,action)=>{
+      const arr= [...state.items]
+      const newData = arr?.filter(
+              (item:any) => item.product.id !== action.payload.product.id && item.product.vendor_id === action.payload.product.vendor_id,
+            );
+      state.items = newData
+      state.quantity = arr.length === 1 ? 0 : state.quantity - 1
+      state.total = arr.length === 1 ? 0 : state.total - action.payload.total
     }
-    // addProduct: (state, action) => {
-    //   // console.log('action', action.payload._id);
-    //   if (state.products.length !== 0) {
-    //     const newData = state.products.filter(
-    //       (item:any) => item.id == action.payload.id && item.vendor_id === action.payload.vendor_id,
-    //     );
-    //     // console.log('newdata', newData);
-    //     if (newData.length > 0) {
-    //       // console.log('product already added to the cart');
-    //     } else {
-    //       // console.log(item.id, action.payload._id);
-    //       state.products.push(action.payload);
-    //       state.quantity += 1;
-    //       let price = parseInt(action.payload.price);
-    //       state.total = state.total + price * action.payload.quantity;
-    //     }
-    //     // state.products.map(item => {
-    //     //   if (item._id == action.payload._id) {
-    //     //     console.log('product already added to the cart');
-    //     //   } else {
-    //     //     console.log(item.id, action.payload._id);
-    //     //     state.products.push(action.payload);
-    //     //     state.quantity += 1;
-    //     //     let price = parseInt(action.payload.price);
-    //     //     state.total = state.total + price * action.payload.quantity;
-    //     //   }
-    //     // });
-    //   } else {
-    //     state.products.push(action.payload);
-    //     state.quantity += action.payload.quantity;
-    //     let price = parseInt(action.payload.price);
-    //     state.total = state.total + price * action.payload.quantity;
-    //   }
-    // },
-    // initiateCart: (state, action) => {
-    //   // console.log('redux', action.payload);
-    //   state.products = action.payload.products;
-    //   state.total = action.payload.total;
-    //   state.quantity = action.payload.quantity;
-    // },
     // deleteProduct: (state, action) => {
     //   if (action.payload.arr) {
     //     action.payload.arr.map(item => {
@@ -93,37 +86,42 @@ const cartSlice = createSlice({
     //     }
     //   }
     // },
-    // incQuantity: (state, action) => {
-    //   state.products.map(item => {
-    //     if (item._id === action.payload._id) {
-    //       item.quantity += 1;
-    //       state.quantity += 1;
-    //       state.total = state.total + action.payload.price;
-    //     }
-    //   });
-    // },
-    // decQuantity: (state, action) => {
-    //   state.products.map(item => {
-    //     if (item._id === action.payload._id) {
-    //       item.quantity -= 1;
-    //       state.quantity -= 1;
-    //       state.total = state.total - action.payload.price;
-    //     }
-    //   });
-    // },
-    // emptyCart: state => {
-    //   state.products = [];
-    //   state.total = 0;
-    //   state.quantity = 0;
-    // },
+    ,incQuantity: (state, action) => {
+      // const arr = [...state.items]
+      state.items.forEach(item => {
+        if (item.product.id === action.payload.product.id && item.product.vendor_id === action.payload.product.vendor_id) {
+          item.quantity += 1;
+          // state.quantity += 1;
+          item.total= item.total + action.payload.product.price
+          console.log("totaltotal",action.payload.product.price)
+          state.total = state.total + action.payload.product.price;
+        }
+      });
+    },
+    decQuantity: (state, action) => {
+      state.items.forEach(item => {
+        if (item.product.id === action.payload.product.id && item.product.vendor_id === action.payload.product.vendor_id)  {
+          if(item.quantity >1){
+            item.quantity -= 1;
+            item.total = item.total - action.payload.product.price;
+            // state.quantity -= 1;
+            state.total = state.total - action.payload.product.price;
+          }
+        }
+      });
+    },
+    emptyCart: state => {
+      state.items = [];
+      state.total = 0;
+      state.quantity = 0;
+    },
   },
 });
 export const {
-//   addProduct,
-//   deleteProduct,
-//   incQuantity,
-//   decQuantity,
-  // emptyCart,
-  // initiateCart,
+  addItem,
+  deleteProduct,
+  incQuantity,
+  decQuantity,
+  emptyCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

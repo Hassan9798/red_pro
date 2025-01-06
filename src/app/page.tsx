@@ -8,7 +8,8 @@ import HomeExploreSection from "@/components/home/home-explore-section";
 import HomeLatestNewsSection from "@/components/home/home-latest-news-section";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
+
+ export const metadata: Metadata = {
   title: "Red Produce",
 };
 
